@@ -1,0 +1,40 @@
+name: Docker Build & Smoke Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install package and run tests
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]' || python -m pip install -e .
+          pytest -q --maxfail=1 --disable-warnings --cov=llm_eval --cov-fail-under=80
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build Docker image (load)
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile
+          push: false
+          tags: llm-eval:ci
+          load: true
+      - name: Run smoke test in container
+        run: |
+          mkdir -p ci-smoke
+          docker run --rm -v "${{ github.workspace }}/ci-smoke:/tmp/ci-smoke" llm-eval:ci \
+            python -m llm_eval --config examples/config.yaml --output-dir /tmp/ci-smoke \
+            --metrics bleu,rouge_l,faithfulness || exit 1
+      - name: Upload smoke artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-smoke-output
+          path: ci-smoke/

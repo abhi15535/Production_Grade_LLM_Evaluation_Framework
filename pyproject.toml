@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "llm-eval"
+version = "0.1.0"
+description = "Production-grade LLM evaluation framework"
+authors = [{name = "Your Name", email = "you@example.com"}]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = ["llm", "evaluation", "nlp", "metrics", "rag"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "typer>=0.9",
+    "pydantic>=1.10",
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "sentence-transformers>=2.2",
+    "rouge-score>=0.1.2",
+    "sacrebleu>=2.3.1",
+    "matplotlib>=3.7",
+    "pyyaml>=6.0",
+    "requests>=2.31",
+    "openai>=1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+]
+
+[project.scripts]
+llm-eval = "llm_eval.cli:main"
+
+[project.urls]
+Homepage = "https://example.com/llm-eval"
+Repository = "https://github.com/your-org/llm-eval"
